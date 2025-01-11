@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        /* Existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .inventory-container {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        form input, form select, form textarea, form button {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .toggle-form-btn {
+            background-color: #f44336;
+            margin-top: 20px;
+        }
+        .toggle-form-btn:hover {
+            background-color: #e53935;
+        }
+        .assign-inventory-form {
+            display: none;
+            background-color: #f1f1f1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .assign-inventory-form input, .assign-inventory-form select, .assign-inventory-form textarea {
+            width: 100%;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Inventory Management</h1>
+</header>
+
+<div class="inventory-container">
+    <!-- Add Assign Inventory Button -->
+    <button class="toggle-form-btn" id="assignInventoryBtn">Assign Inventory</button>
+
+    <button class="toggle-form-btn" id="toggleFormBtn">Add New Item</button>
+
+    <button class="toggle-form-btn" id="viewResourceHistoryBtn">View Resource History</button> <!-- New Button -->
+
+    <form id="inventoryForm" style="display:none;">
+        <label for="binId">Bin ID:</label>
+        <input type="text" id="binId" required><br><br>
+
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" required><br><br>
+
+        <label for="supplier">Supplier:</label>
+        <input type="text" id="supplier" required><br><br>
+
+        <label for="stockAvailable">Stock Available:</label>
+        <input type="number" id="stockAvailable" required><br><br>
+
+        <button type="submit">Add Item</button>
+    </form>
+
+    <table id="inventoryTable">
+        <thead>
+            <tr>
+                <th>Bin ID</th>
+                <th>Item Name</th>
+                <th>Supplier</th>
+                <th>Stock Available</th> <!-- Changed column name -->
+                <th>Requested</th> <!-- Changed column name -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Inventory rows will be added dynamically here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Assign Inventory Form (Hidden Initially) -->
+<div class="assign-inventory-form" id="assignInventoryForm">
+    <h2>Assign Inventory</h2>
+    <form id="assignInventoryDetailsForm">
+        <label for="projectName">Project Name:</label>
+        <select id="projectName" required>
+            <option value="">Select a Project</option>
+            <option value="Hazida Limited">Hazida Limited</option>
+            <option value="Hazida Motors">Hazida Motors</option>
+            <option value="Hazida Foods">Hazida Foods</option>
+            <option value="Freight and Passengers">Freight and Passengers</option>
+            <option value="Lumumba Showroom Ezone">Lumumba Showroom Ezone</option>
+            <option value="Manda Hill Ezone Store">Manda Hill Ezone Store</option>
+            <option value="Cento Ezone Store">Cento Ezone Store</option>
+            <option value="Cosmopolitan Ezone Store">Cosmopolitan Ezone Store</option>
+            <option value="Trident Ezone Store">Trident Ezone Store</option>
+            <option value="Kitwe Ezone Store">Kitwe Ezone Store</option>
+            <option value="Livingstone Ezone Store">Livingstone Ezone Store</option>
+            <option value="Mr Mussa">Mr Mussa</option>
+            <option value="Mr Ebrahim">Mr Ebrahim</option>
+            <option value="Madam Shirin">Madam Shirin</option>
+            <option value="Mr Ishmil">Mr Ishmil</option>
+            <option value="Mr Shabbir">Mr Shabbir</option>
+            <option value="Mr Riaz">Mr Riaz</option>
+            <option value="Mr Faiyaz">Mr Faiyaz</option>
+            <option value="Northmeads Flats 1">Northmeads Flats 1</option>
+            <option value="Northmeads Flats 2">Northmeads Flats 2</option>
+            <option value="Fields Works">Fields Works</option>
+        </select><br><br>
+        <label for="employee">Employee:</label>
+        <select id="employee" required>
+            <option value="">Select Employee</option>
+            <option value="BRIGHTON MATOLOKOSH">BRIGHTON MATOLOKOSH</option>
+            <option value="CAPHAS TEMBO">CAPHAS TEMBO</option>
+            <option value="CLISHA MAMBILIMA">CLISHA MAMBILIMA</option>
+            <option value="DABSON DAKA">DABSON DAKA</option>
+            <option value="DANNY MVULA">DANNY MVULA</option>
+            <option value="JAMES DAKA">JAMES DAKA</option>
+            <option value="JOSEPH TEMBO">JOSEPH TEMBO</option>
+            <option value="LUCKSON PHIRI">LUCKSON PHIRI</option>
+            <option value="MICHEAL LOBELA">MICHEAL LOBELA</option>
+            <option value="OBERT SIAME">OBERT SIAME</option>
+            <option value="DOMINIC SAKALA">DOMINIC SAKALA</option>
+            <option value="PETER MAWERE">PETER MAWERE</option>
+            <option value="SAVIOUR PHIRI">SAVIOUR PHIRI</option>
+            <option value="TEMBEYA SAKALA">TEMBEYA SAKALA</option>
+            <option value="KELVIN SIAME">KELVIN SIAME</option>
+        </select><br><br>
+
+        <label for="taskDescription">Task Description:</label>
+        <textarea id="taskDescription" required></textarea><br><br>
+
+        <label for="itemName">Item Name:</label>
+        <select id="itemName" required>
+            <option value="">Select Item</option>
+            <!-- Dynamically populated items will go here -->
+        </select><br><br>
+
+        <label for="qty">Quantity:</label>
+        <input type="number" id="qty" required><br><br>
+
+        <button type="submit">Assign Inventory</button>
+    </form>
+    <button id="closeAssignFormBtn">Close</button>
+</div>
+
+<script>
+    // Select elements
+    const inventoryForm = document.getElementById('inventoryForm');
+    const inventoryTable = document.getElementById('inventoryTable').getElementsByTagName('tbody')[0];
+    const toggleFormBtn = document.getElementById('toggleFormBtn');
+    const assignInventoryBtn = document.getElementById('assignInventoryBtn');
+    const assignInventoryForm = document.getElementById('assignInventoryForm');
+    const closeAssignFormBtn = document.getElementById('closeAssignFormBtn');
+    const itemNameSelect = document.getElementById('itemName');
+    const viewResourceHistoryBtn = document.getElementById('viewResourceHistoryBtn');
+
+    // Save inventory data to localStorage
+    function saveInventory(inventoryData) {
+        localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+    }
+
+    // Load inventory data from localStorage
+    function loadInventory() {
+        const inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
+        inventoryTable.innerHTML = ''; // Clear existing table rows
+        inventoryData.forEach(item => {
+            const newRow = inventoryTable.insertRow();
+            newRow.insertCell(0).textContent = item.binId;
+            newRow.insertCell(1).textContent = item.name;
+            newRow.insertCell(2).textContent = item.supplier;
+            newRow.insertCell(3).textContent = item.stockAvailable;
+            newRow.insertCell(4).textContent = item.requested;
+        });
+    }
+
+    // Toggle visibility of the form when the button is clicked
+    toggleFormBtn.addEventListener('click', function() {
+        if (inventoryForm.style.display === "none" || inventoryForm.style.display === "") {
+            inventoryForm.style.display = "block";
+            toggleFormBtn.textContent = "Hide Form";
+        } else {
+            inventoryForm.style.display = "none";
+            toggleFormBtn.textContent = "Add New Item";
+        }
+    });
+
+    // Handle the form submission for adding inventory
+    inventoryForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from refreshing the page
+
+        const binId = document.getElementById('binId').value;
+        const name = document.getElementById('name').value;
+        const supplier = document.getElementById('supplier').value;
+        const stockAvailable = parseInt(document.getElementById('stockAvailable').value);
+
+        const inventoryData = JSON.parse(localStorage.getItem('inventoryData')) || [];
+
+        // Check if the item already exists in the inventory
+        const existingItemIndex = inventoryData.findIndex(item => item.binId === binId);
+
+        if (existingItemIndex !== -1) {
+            // Update the existing item stock
+            inventoryData[existingItemIndex].stockAvailable += stockAvailable;
+        } else {
+            // Add new item to inventory
+            inventoryData.push({
+                binId,
+                name,
+                supplier,
+                stockAvailable,
+                requested: 0
+            });
+        }
+
+        // Save updated inventory to localStorage
+        saveInventory(inventoryData);
+
+        // Clear the form after submission
+        inventoryForm.reset();
+        inventoryForm.style.display = "none";  // Hide the form after submission
+        toggleFormBtn.textContent = "Add New Item";  // Change button text back to "Add New Item"
+
+        // Reload the inventory
+        loadInventory();
+    });
+
+    // Open Assign Inventory form when the button is clicked
+    assignInventoryBtn.addEventListener('click', function() {
+        // Populate the item names in the assign inventory form
+        itemNameSelect.innerHTML = '<option value="">Select Item</option>'; // Clear existing options
+        for (let i = 0; i < inventoryTable.rows.length; i++) {
+            const row = inventoryTable.rows[i];
+            const itemName = row.cells[1].textContent;
+            const option = document.createElement('option');
+            option.value = itemName;
+            option.textContent = itemName;
+            itemNameSelect.appendChild(option);
+        }
+
+        assignInventoryForm.style.display = 'block';
+    });
+
+    // Close the Assign Inventory form
+    closeAssignFormBtn.addEventListener('click', function() {
+        assignInventoryForm.style.display = 'none';
+    });
+
+    // Handle the form submission for assigning inventory
+    document.getElementById('assignInventoryDetailsForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from refreshing the page
+
+        const projectName = document.getElementById('projectName').value;
+        const employee = document.getElementById('employee').value;
+        const taskDescription = document.getElementById('taskDescription').value;
+        const itemName = document.getElementById('itemName').value;
+        const qty = parseInt(document.getElementById('qty').value);
+
+        // Find the item in the inventory table and update the 'Requested' column
+        let itemRow = null;
+        for (let i = 0; i < inventoryTable.rows.length; i++) {
+            const row = inventoryTable.rows[i];
+            if (row.cells[1].textContent === itemName) {
+                itemRow = row;
+                break;
+            }
+        }
+
+        if (itemRow) {
+            const currentStock = parseInt(itemRow.cells[3].textContent);
+            if (currentStock >= qty) {
+                itemRow.cells[3].textContent = currentStock - qty; // Deduct from stock
+                const currentRequested = parseInt(itemRow.cells[4].textContent);
+                itemRow.cells[4].textContent = currentRequested + qty; // Update the requested quantity
+            } else {
+                alert("Not enough stock available!");
+                return;
+            }
+        }
+
+        alert(`Assigned Inventory: \nProject: ${projectName}\nEmployee: ${employee}\nTask: ${taskDescription}\nItem: ${itemName}\nQuantity: ${qty}`);
+        
+        // Reset form after submission
+        document.getElementById('assignInventoryDetailsForm').reset();
+        assignInventoryForm.style.display = 'none';
+    });
+
+    // Load inventory data when the page loads
+    window.onload = loadInventory;
+
+    // View Resource History button click handler
+    viewResourceHistoryBtn.addEventListener('click', function() {
+        // Add functionality to view the resource history (you can implement this as needed)
+        alert('View Resource History functionality not implemented yet.');
+    });
+
+</script>
+
+</body>
+</html>
