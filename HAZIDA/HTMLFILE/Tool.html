@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Inventory Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50; /* Green heading background */
+            color: white;
+        }
+
+        td {
+            background-color: white;
+        }
+
+        td[contenteditable="true"]:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-container {
+            margin: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        input[type="text"], input[type="date"] {
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #toggleButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #toggleButton:hover {
+            background-color: #45a049;
+        }
+
+        #searchInput {
+            padding: 8px;
+            margin: 20px 0;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            float: right;
+        }
+
+        .history-button {
+            background-color: #2196F3;
+        }
+
+        .history-button:hover {
+            background-color: #1976D2;
+        }
+
+        .assign-employee-button {
+            background-color: #FF9800;
+        }
+
+        .assign-employee-button:hover {
+            background-color: #FB8C00;
+        }
+
+        .assign-tool-button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #FF5722;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .assign-tool-button:hover {
+            background-color: #E64A19;
+        }
+
+        /* Modal for Employee Selection */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+
+    <button id="toggleButton">Add New Tool</button>
+
+    <button class="assign-tool-button" id="assignToolButton">Assign Tool</button>
+
+    <div class="form-container" id="formContainer">
+        <h2>Add New Tool</h2>
+        <form id="toolForm">
+            <input type="text" id="binId" placeholder="Bin ID" required>
+            <input type="text" id="toolName" placeholder="Tool Name" required>
+            <input type="text" id="currentHolder" placeholder="Current Holder" required>
+            <input type="text" id="currentLocation" placeholder="Current Location" required>
+            <input type="text" id="owner" placeholder="Owner" required>
+            <input type="date" id="purchaseDate" placeholder="Purchase Date" required>
+            <button type="submit">Add Tool</button>
+        </form>
+    </div>
+
+    <h3>Tool List</h3>
+    <!-- Search Bar -->
+    <input type="text" id="searchInput" placeholder="Search for tools..." onkeyup="searchTools()">
+
+    <table id="toolTable">
+        <thead>
+            <tr>
+                <th>Bin ID</th>
+                <th>Tool Name</th>
+                <th>Current Holder</th>
+                <th>Current Location</th>
+                <th>Owner</th>
+                <th>Purchase Date</th>
+                <th>Assign to Employee</th>
+                <th>Tool History</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Tool rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <!-- Modal for selecting employee -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <h3>Select Employee</h3>
+            <select id="employeeSelect">
+                <!-- Employee options will be added here dynamically -->
+            </select>
+            <button id="assignEmployeeButton">Assign Tool</button>
+            <button id="closeModalButton">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // List of employees (this would ideally come from your Employee_task_manager.html)
+        const employees = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sara Lee'];
+
+        // Toggle the visibility of the form when the button is clicked
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            const formContainer = document.getElementById('formContainer');
+            formContainer.style.display = (formContainer.style.display === 'none' || formContainer.style.display === '') ? 'block' : 'none';
+        });
+
+        // Handle "Assign Tool" button click
+        document.getElementById('assignToolButton').addEventListener('click', function() {
+            // Show the modal to select an employee
+            const employeeSelect = document.getElementById('employeeSelect');
+            employeeSelect.innerHTML = '';  // Clear previous selections
+
+            // Add employee options to the dropdown
+            employees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee;
+                option.textContent = employee;
+                employeeSelect.appendChild(option);
+            });
+
+            // Open the modal when the "Assign Tool" button is clicked
+            document.getElementById('employeeModal').style.display = 'flex';  // Show modal
+        });
+
+        // Handle assign employee button click
+        document.getElementById('assignEmployeeButton').addEventListener('click', function() {
+            const selectedEmployee = document.getElementById('employeeSelect').value;
+            if (selectedEmployee) {
+                alert('Tool assigned to ' + selectedEmployee);  // Here you can update the tool's holder
+            }
+        });
+
+        // Close modal
+        document.getElementById('closeModalButton').addEventListener('click', function() {
+            document.getElementById('employeeModal').style.display = 'none';  // Hide modal
+        });
+
+        // Load tools from localStorage when the page loads
+        window.onload = function() {
+            loadToolsFromLocalStorage();
+        };
+
+        // Handle form submission to add a new tool
+        document.getElementById('toolForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const binId = document.getElementById('binId').value;
+            const toolName = document.getElementById('toolName').value;
+            const currentHolder = document.getElementById('currentHolder').value;
+            const currentLocation = document.getElementById('currentLocation').value;
+            const owner = document.getElementById('owner').value;
+            const purchaseDate = document.getElementById('purchaseDate').value;
+
+            const tool = { binId, toolName, currentHolder, currentLocation, owner, purchaseDate };
+
+            // Save tool to localStorage
+            saveToolToLocalStorage(tool);
+
+            // Add tool to the table
+            addToolToTable(tool);
+
+            // Reset form and hide it
+            document.getElementById('toolForm').reset();
+            document.getElementById('formContainer').style.display = 'none';
+        });
+
+        // Function to save tool to localStorage
+        function saveToolToLocalStorage(tool) {
+            let tools = JSON.parse(localStorage.getItem('tools')) || [];
+            tools.push(tool);
+            localStorage.setItem('tools', JSON.stringify(tools));
+        }
+
+        // Function to load tools from localStorage
+        function loadToolsFromLocalStorage() {
+            let tools = JSON.parse(localStorage.getItem('tools')) || [];
+            tools.forEach(tool => {
+                addToolToTable(tool);
+            });
+        }
+
+        // Function to add a tool to the table
+        function addToolToTable(tool) {
+            const table = document.getElementById('toolTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            newRow.insertCell(0).innerText = tool.binId;
+            newRow.insertCell(1).innerText = tool.toolName;
+            newRow.insertCell(2).innerText = tool.currentHolder;
+            newRow.insertCell(3).innerText = tool.currentLocation;
+            newRow.insertCell(4).innerText = tool.owner;
+            newRow.insertCell(5).innerText = tool.purchaseDate;
+
+            // Add an "Assign to Employee" button
+            const assignEmployeeButtonCell = newRow.insertCell(6);
+            const assignEmployeeButton = document.createElement('button');
+            assignEmployeeButton.innerText = 'Assign to Employee';
+            assignEmployeeButton.classList.add('assign-employee-button');
+            assignEmployeeButton.addEventListener('click', function() {
+                assignToEmployee(newRow);
+            });
+            assignEmployeeButtonCell.appendChild(assignEmployeeButton);
+
+            // Add a "View History" button
+            const historyButtonCell = newRow.insertCell(7);
+            const historyButton = document.createElement('button');
+            historyButton.innerText = 'View History';
+            historyButton.classList.add('history-button');
+            historyButton.addEventListener('click', function() {
+                viewHistory(newRow);
+            });
+            historyButtonCell.appendChild(historyButton);
+        }
+
+        // Function to assign tool to employee
+        function assignToEmployee(row) {
+            const toolName = row.cells[1].innerText;
+            const employeeName = prompt(`Assign ${toolName} to which employee?`);
+
+            if (employeeName) {
+                const currentEmployee = row.cells[2].innerText;
+                row.cells[2].innerText = `${currentEmployee}, ${employeeName}`;  // Update current holder with employee
+
+                // Log the assignment history
+                const history = row.cells[7] ? row.cells[7].innerText : '';  // Get existing history or empty
+                const timestamp = new Date().toLocaleString();
+                const newHistory = `${history}\nAssigned to ${employeeName} on ${timestamp}`;
+                row.cells[7].innerText = newHistory;
+            }
+        }
+
+        // Function to search tools in the table
+        function searchTools() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.getElementById('toolTable').getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(searchInput)) {
+                        found = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>
